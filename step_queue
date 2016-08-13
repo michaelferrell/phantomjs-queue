@@ -1,0 +1,44 @@
+/**
+ * StepQueue
+ * Used for registering and running a queue based step system in phantomjs
+ */
+function StepQueue() {
+    this.queue = [];
+    this.func_called = false;
+}
+
+StepQueue.prototype.register = function(func) {
+    if (typeof func !== 'function') {
+        console.log('~ error')
+        console.log('~ attemped to register ' + typeof func + ' ' +func);
+        console.log('~ a step must be a function')
+        phantom.exit();
+    }
+    this.queue.push(func);
+}
+
+StepQueue.prototype.next = function() {
+    var current_step = this.queue.shift();
+    if (current_step !== undefined) { // call next step
+        current_step();
+    } else { // steps complete
+        phantom.exit();        
+    }
+}
+
+StepQueue.prototype.prepare = function(status, step_delay, stay_on_step) {
+    var self = this;
+    var msg = status === 'success' ? '~ done' : 'failed to load the page';
+    if (status !== 'success')  {
+        phantom.exit();
+    }
+    if (!stay_on_step) {
+        if (!self.func_called) {
+            self.func_called = true;
+            setTimeout(function() {
+                self.next();
+                self.func_called = false;
+            }, step_delay);
+        }
+    }
+}
