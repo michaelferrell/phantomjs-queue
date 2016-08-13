@@ -1,3 +1,5 @@
+exports.StepQueue = StepQueue;
+
 /**
  * StepQueue
  * Used for registering and running a queue based step system in phantomjs
