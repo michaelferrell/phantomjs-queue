@@ -9,6 +9,11 @@ function StepQueue() {
     this.func_called = false;
 }
 
+StepQueue.prototype.init = function() {
+    var first_step = this.queue.shift();
+    first_step();
+}
+
 StepQueue.prototype.register = function(func) {
     if (typeof func !== 'function') {
         console.log('~ error')
